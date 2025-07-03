@@ -7,6 +7,7 @@ app.use(express.urlencoded({ extended: true }));
 const port = process.env.port;
 const userroutes = require('./routes/users')
 const adminroutes = require('./routes/admin')
+const eventroutes = require('./routes/events')
 
 
 
@@ -15,7 +16,8 @@ app.get('/',(req,res)=>{
 })
 
 app.use('/api/users',userroutes);
-app.use('/api/admin',adminroutes)
+app.use('/api/admin',adminroutes);
+app.use('/api/events',eventroutes);
 
 
 
