@@ -1,2 +1,2 @@
 # JoinIn-backend
-“JoinIn — Your Gateway to Great Events
+JoinIn — Your Gateway to Great Events
