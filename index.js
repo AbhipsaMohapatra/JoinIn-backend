@@ -10,7 +10,7 @@ const adminroutes = require('./routes/admin')
 const eventroutes = require('./routes/events')
 
 
-
+app.use(express.static('public'));
 app.get('/',(req,res)=>{
     res.send("Hello world");
 })

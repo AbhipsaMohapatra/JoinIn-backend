@@ -9,12 +9,12 @@ const run = require('../db.js');
 const e = require('express');
 
 router.post('/create',authenticateAdmin, async(req,res)=>{
-    const {title,description,date,time,venue,category} = req.body;
+    const {title,description,date,time,venue,category,picture} = req.body;
     try{
 
         const con = await run();
     
-        const [result] = await con.execute('insert into events (title,description,date,time,venue,category) values(?,?,?,?,?,?)',[title,description,date,time,venue,category]);
+        const [result] = await con.execute('insert into events (title,description,date,time,venue,category,picture) values(?,?,?,?,?,?,?)',[title,description,date,time,venue,category,picture||null]);
         res.json({message:"Event registraion Succussful",eventId:result.insertId})
     }
     catch (e){
