@@ -15,7 +15,15 @@ router.post('/register',async (req,res)=>{
         }
         let hashed = await bcrypt.hash(password,10);
         const [ ans] = await con.execute('insert into admins (username,email,password) values(?,?,?)',[username,email,hashed])
-        res.status(201).json({ message: "Admin registered successfully" });
+         const token = jwt.sign( { id: ans.insertId,  role: "admin" },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" });
+
+        
+        res.status(201).json({ message: "Admin registered successfully",token,user:{id: ans.insertId,
+        name:username,
+        email,
+        role: "admin"} });
 
     }
     catch(e){
@@ -41,7 +49,11 @@ router.post('/login',async(req,res)=>{
       process.env.JWT_SECRET,
       { expiresIn: "1h" });
 
-      res.json({message:"Login Successful",token})
+      res.json({message:"Login Successful",token,user: {
+        id: admin.aid,
+        name: admin.username,
+        email: admin.email,
+        role: "admin"}})
 
     }
     catch(e){

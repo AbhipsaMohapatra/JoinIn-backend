@@ -20,8 +20,16 @@ router.post('/register', async (req,res)=>{
 
     const hashed = await bcrypt.hash(password,10);
     const [result,field] = await con.execute('insert  into users (name,email,password) values(?,?,?)',[name,email,hashed]);
-    console.log(result);
-    res.status(202).json({message:"User registered successfully"});
+    
+     const token = jwt.sign({ id: result.insertId ,role:"user"}, process.env.JWT_SECRET, {
+          expiresIn: "2h",
+        });
+    res.status(202).json({message:"User registered successfully",token,user: {
+        id: result.insertId,
+        name,
+        email,
+        role: "user"
+      }});
 
 
    }
@@ -52,10 +60,15 @@ router.post('/login', async (req,res)=>{
          const token = jwt.sign({ id: user.id, name: user.name ,role:"user"}, process.env.JWT_SECRET, {
           expiresIn: "2h",
         });
-        res.status(201).json({message:"Login Successful",token});
+        res.status(201).json({message:"Login Successful",token, user: {
+        id: user.uid,
+        name: user.name,
+        email: user.email,
+        role: "user"
+      }});
      }
      catch(e){
-        res.status(409).json({error:'error occured',detail:e})
+        res.status(500).json({error:'error occured',detail:e})
 
      }
 
