@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const run = require('../db.js')
 
 router.post('/register',async (req,res)=>{
-    const {username,password} = req.body;
+    const {username,email,password} = req.body;
     try{
         const con = await run();
         const[result] = await con.execute('select * from admins where username=(?)',[username])
@@ -14,7 +14,7 @@ router.post('/register',async (req,res)=>{
             res.status(409).json({message:"User already exists"})
         }
         let hashed = await bcrypt.hash(password,10);
-        const [ ans] = await con.execute('insert into admins (username,password) values(?,?)',[username,hashed])
+        const [ ans] = await con.execute('insert into admins (username,email,password) values(?,?,?)',[username,email,hashed])
         res.status(201).json({ message: "Admin registered successfully" });
 
     }
