@@ -17,7 +17,7 @@ router.post('/register',async (req,res)=>{
         const [ ans] = await con.execute('insert into admins (username,email,password) values(?,?,?)',[username,email,hashed])
          const token = jwt.sign( { id: ans.insertId,  role: "admin" },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" });
+      { expiresIn: "7d" });
 
         
         res.status(201).json({ message: "Admin registered successfully",token,user:{id: ans.insertId,
@@ -47,7 +47,7 @@ router.post('/login',async(req,res)=>{
         }
         const token = jwt.sign( { id: admin.id, username: admin.username, role: "admin" },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" });
+      { expiresIn: "7d" });
 
       res.json({message:"Login Successful",token,user: {
         id: admin.aid,

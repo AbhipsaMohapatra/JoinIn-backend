@@ -22,7 +22,7 @@ router.post('/register', async (req,res)=>{
     const [result,field] = await con.execute('insert  into users (name,email,password) values(?,?,?)',[name,email,hashed]);
     
      const token = jwt.sign({ id: result.insertId ,role:"user"}, process.env.JWT_SECRET, {
-          expiresIn: "2h",
+          expiresIn: "7d",
         });
     res.status(202).json({message:"User registered successfully",token,user: {
         id: result.insertId,
@@ -58,7 +58,7 @@ router.post('/login', async (req,res)=>{
              res.send(401).json({message:"Invalid password"});
          }
          const token = jwt.sign({ id: user.id, name: user.name ,role:"user"}, process.env.JWT_SECRET, {
-          expiresIn: "2h",
+          expiresIn: "7d",
         });
         res.status(201).json({message:"Login Successful",token, user: {
         id: user.uid,
