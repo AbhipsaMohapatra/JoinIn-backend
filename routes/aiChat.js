@@ -5,6 +5,7 @@ const fetch = require("node-fetch");
 
 router.post("/", async (req, res) => {
   const {prompt} = req.body;
+  console.log("OPENROUTER_API_KEY:", "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");
   try {
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -12,7 +13,7 @@ router.post("/", async (req, res) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer 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`,
         },
         body: JSON.stringify({
           model: "deepseek/deepseek-chat-v3-0324:free",
@@ -22,6 +23,7 @@ router.post("/", async (req, res) => {
     );
 
     const data = await response.json();
+    console.log("Full API response:", data);
 
     if (
       data &&
