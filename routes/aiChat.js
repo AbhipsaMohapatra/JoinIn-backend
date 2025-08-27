@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
     );
 
     const data = await response.json();
-    console.log("Full API response:", data);
+    
 
     if (
       data &&
