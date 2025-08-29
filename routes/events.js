@@ -62,32 +62,39 @@ router.get("/", async (req, res) => {
 
 router.post("/:id/register", UserAuthentication, async (req, res) => {
   const event_id = req.params.id;
-  const { name, email, phone } = req.body;
+  const { name, email, phone ,user_id } = req.body;
   try {
     const con = await run();
     const [result] = await con.execute("select * from events where id= ? ", [
       event_id,
     ]);
+
+    const [result2] = await con.execute("select * from registrations where event_id = ? and user_id= ? ",[event_id,user_id])
+
     if (result.length === 0) {
       return res.json({ message: "No such event found" });
     }
+    if(result2.length>0){
+      return res.json({message:"You have already registered in this event"})
+    }
+
     if (new Date() > new Date(result[0].last_date)) {
       return res
         .status(400)
         .json({ message: "Registration closed for this event" });
     }
 
-    const [exixts] = await con.execute(
-      "select * from registrations where email=? and event_id=?",
-      [email, event_id]
-    );
-    if (exixts.length > 0) {
-      return res.json({ message: "User has already registered" });
-    }
+    // const [exixts] = await con.execute(
+    //   "select * from registrations where email=? and event_id=?",
+    //   [email, event_id]
+    // );
+    // if (exixts.length > 0) {
+    //   return res.json({ message: "User has already registered" });
+    // }
 
     const [added] = await con.execute(
-      "insert into registrations (event_id,name,email,phone) values(?,?,?,?)",
-      [event_id, name, email, phone]
+      "insert into registrations (event_id,user_id,name,email,phone) values(?,?,?,?,?)",
+      [event_id,user_id, name, email, phone]
     );
     res.json({ message: "Registration Successful" });
   } catch (e) {
@@ -97,6 +104,27 @@ router.post("/:id/register", UserAuthentication, async (req, res) => {
     });
   }
 });
+
+//Events by the user
+
+router.get('/:id/myevents',UserAuthentication, async (req,res)=>{
+  const id = req.params.id;
+  try{
+    const con = await run();
+    const [enquire] = await con.query("select * from registrations where user_id = ?",[id])
+
+    if(enquire.length==0){
+      return res.json({error:"You have not registered in any event"})
+    }
+
+    const [result] = await con.query("select * from events e join registrations r on e.id = r.event_id where r.user_id = ? order by date asc , time asc",[id])
+    res.json(result);
+  }
+  catch(e){
+    res.status(500).json({error:e.message});
+
+  }
+})
 
 router.get("/:id/participants", authenticateAdmin, async (req, res) => {
   const eventId = req.params.id;
@@ -181,5 +209,7 @@ router.get("/:id/getFeedback", async (req, res) => {
     res.json({ error: "Some error occured", message: e.message });
   }
 });
+
+
 
 module.exports = router;
